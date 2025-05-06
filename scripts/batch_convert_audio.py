@@ -1,3 +1,4 @@
+"""Provides a GUI to batch convert MP3 audio files to 16kHz mono WAV using ffmpeg."""
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import subprocess
@@ -6,23 +7,23 @@ import sys
 
 def select_files():
     """Opens a dialog to select multiple MP3 files."""
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
+    _root = tk.Tk()
+    _root.withdraw()  # Hide the main window
     file_paths = filedialog.askopenfilenames(
         title="Select MP3 files to convert",
         filetypes=(("MP3 files", "*.mp3"), ("All files", "*.*"))
     )
-    root.destroy()
+    _root.destroy()
     return file_paths
 
 def select_output_directory():
     """Opens a dialog to select the output directory."""
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
+    _root = tk.Tk()
+    _root.withdraw()  # Hide the main window
     directory_path = filedialog.askdirectory(
         title="Select Output Directory for WAV files"
     )
-    root.destroy()
+    _root.destroy()
     return directory_path
 
 def convert_files(input_files, output_dir):
@@ -49,13 +50,20 @@ def convert_files(input_files, output_dir):
         file_name_no_ext = os.path.splitext(base_name)[0]
         output_file = os.path.join(output_dir, f"{file_name_no_ext}.wav")
 
-        print(f"\n[{i+1}/{total_files}] Converting '{base_name}' to '{os.path.basename(output_file)}'...")
+        print(
+            f"\n[{i+1}/{total_files}] Converting '{base_name}' to " 
+            f"'{os.path.basename(output_file)}'..."
+        )
 
         # Check if ffmpeg exists (simple check)
         try:
-            subprocess.run(["ffmpeg", "-version"], check=True, capture_output=True)
+            _ = subprocess.run(["ffmpeg", "-version"], check=True, capture_output=True)
         except (FileNotFoundError, subprocess.CalledProcessError):
-            messagebox.showerror("Error", "ffmpeg not found or not executable. Please ensure ffmpeg is installed and in your system's PATH.")
+            messagebox.showerror(
+                "Error", 
+                "ffmpeg not found or not executable. Please ensure ffmpeg is " 
+                "installed and in your system's PATH."
+            )
             return # Stop processing if ffmpeg isn't found on the first file
 
 
@@ -72,7 +80,7 @@ def convert_files(input_files, output_dir):
         ]
 
         try:
-            process = subprocess.run(
+            _process = subprocess.run(
                 command,
                 check=True,          # Raise an error if ffmpeg fails
                 capture_output=True, # Capture stdout/stderr
@@ -86,20 +94,21 @@ def convert_files(input_files, output_dir):
             error_message = f"Failed to convert '{base_name}'. Error:\n{e.stderr}"
             print(error_message, file=sys.stderr)
             errors.append(error_message)
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-exception-caught
             error_message = f"An unexpected error occurred converting '{base_name}':\n{e}"
             print(error_message, file=sys.stderr)
             errors.append(error_message)
 
 
     # --- Summary ---
-    summary_message = f"\n--- Conversion Summary ---\n"
+    summary_message = "\n--- Conversion Summary ---\n"
     summary_message += f"Total files selected: {total_files}\n"
     summary_message += f"Successfully converted: {converted_count}\n"
     summary_message += f"Failed: {len(errors)}\n"
 
     if errors:
-        summary_message += "\nErrors encountered:\n" + "\n".join([f"- {err.splitlines()[0]}" for err in errors]) # Show first line of each error
+        error_lines = [f"- {err.splitlines()[0]}" for err in errors] # Show first line
+        summary_message += "\nErrors encountered:\n" + "\n".join(error_lines)
 
     print(summary_message)
     # Display summary message box
@@ -116,7 +125,10 @@ if __name__ == "__main__":
         root.withdraw()
         root.destroy()
     except tk.TclError as e:
-        print("Could not initialize Tkinter GUI. Ensure you have a display environment.", file=sys.stderr)
+        print(
+            "Could not initialize Tkinter GUI. Ensure you have a display environment.", 
+            file=sys.stderr
+        )
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -129,3 +141,4 @@ if __name__ == "__main__":
             print("Output directory selection cancelled.")
     else:
         print("File selection cancelled.")
+# End-of-file (EOF)

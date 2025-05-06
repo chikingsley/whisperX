@@ -50,7 +50,6 @@ def run_mfa_alignment(audio_path: str, transcript: str, lang: str) -> str | None
             ["mamba",
              "run",
              "-n", "aligner",
-             "--no-capture-output", # Prevent conda/mamba messing with stdio
              "mfa",
              "align", 
              td,
@@ -110,15 +109,17 @@ print(result["segments"]) # after alignment
 # import gc; gc.collect(); torch.cuda.empty_cache(); del model_a
 
 # 3. Assign speaker labels
-diarize_model = whisperx.diarize.DiarizationPipeline(
-    use_auth_token="YOUR_HUGGINGFACE_TOKEN_HERE", device=device
-)
+# To use speaker diarization, you'll need to provide your own HF token here
+# diarize_model = whisperx.diarize.DiarizationPipeline(
+#    use_auth_token="YOUR_HF_TOKEN", device=device
+# )
+# diarize_segments = diarize_model(audio)
+# result = whisperx.assign_word_speakers(diarize_segments, result)
+# print(diarize_segments)
+# print(result["segments"])
 
-# add min/max number of speakers if known
-diarize_segments = diarize_model(audio)
-# diarize_model(audio, min_speakers=min_speakers, max_speakers=max_speakers)
-
-result = whisperx.assign_word_speakers(diarize_segments, result)
-print(diarize_segments)
-print(result["segments"])
-# End-of-file (EOF)
+# Output just the MFA-aligned results
+print("\nFinal transcription with MFA alignment:")
+for seg in result["segments"]:
+    print(f"{seg['start']:.2f} → {seg['end']:.2f}: {seg['text']}")
+# End-of-file (EOF) 

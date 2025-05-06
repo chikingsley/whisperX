@@ -169,3 +169,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Ignore all files in the data directory
+French 1/
+French 1 - wav/
+test-12/

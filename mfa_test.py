@@ -111,7 +111,7 @@ print(result["segments"]) # after alignment
 
 # 3. Assign speaker labels
 diarize_model = whisperx.diarize.DiarizationPipeline(
-    use_auth_token="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", device=device
+    use_auth_token="YOUR_HUGGINGFACE_TOKEN_HERE", device=device
 )
 
 # add min/max number of speakers if known

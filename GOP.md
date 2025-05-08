@@ -104,5 +104,6 @@ The experts score at three levels: phoneme-level, word-level and sentence-level.
 In this recipe, the automatic phoneme-level scoring is illustrated.
 
 ## Acknowledgement
+
 The author of this recipe would like to thank Speechocean for providing the corpus,
 and Xingyu Na for his works of model tuning and his helpful suggestions.
